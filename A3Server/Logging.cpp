@@ -3,6 +3,7 @@
 
 Logging::Logging()
 {
+    serverSocket = -1;
 }
 
 Logging::~Logging()
@@ -55,7 +56,7 @@ void Logging::startListening() {
 
         printf("%s", buffer);
 
-        #ifdef _WIN32 || _WIN64 // end of unix support
+        #ifdef _WIN32 // end of unix support
         closesocket(clientSocket);
         #else
         close(clientSocket);
