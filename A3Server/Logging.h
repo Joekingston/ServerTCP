@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <cstring>
 
+using namespace std;
+
 #define PROTOCOL 0
 
 class Logging {
@@ -29,6 +31,6 @@ public:
     Logging();
     ~Logging();
     void startListening();
-
+    void writeLog(const string &log);
 
 };

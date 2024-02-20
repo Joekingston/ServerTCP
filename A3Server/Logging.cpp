@@ -53,7 +53,7 @@ void Logging::startListening() {
 
         char buffer[1024] = { 0 };
         recv(clientSocket, buffer, sizeof(buffer), 0);
-
+        writeLog(buffer);
         printf("%s", buffer);
 
         #ifdef _WIN32 // end of unix support
@@ -65,4 +65,16 @@ void Logging::startListening() {
 
     }
 
+}
+
+void Logging::writeLog(const string &log) {
+    ofstream logFile("testlog.txt", ios_base::app);
+    if (logFile.is_open()) {
+        logFile.write(log.c_str(), log.length());
+        logFile.put('\n');
+        logFile.close();
+    }
+    else {
+        printf("Error opening log file\n");
+    }
 }
