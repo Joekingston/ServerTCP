@@ -15,6 +15,8 @@
 #include <sstream>
 #include <iomanip>
 #include <cstring>
+#include "mutex"
+#include <WS2tcpip.h>
 
 using namespace std;
 
@@ -25,12 +27,16 @@ private:
 
     int serverSocket;
     int port = 30001;
+    string logFile = "testlog.txt";
+    mutex mutex;
+    string clientIP;
 
 public:
 
     Logging();
     ~Logging();
     void startListening();
+    void handleClient(int clientSocket);
     void writeLog(const string &log);
 
 };

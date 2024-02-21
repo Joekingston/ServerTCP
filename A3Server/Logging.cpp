@@ -10,6 +10,20 @@ Logging::~Logging()
 {
 }
 
+void Logging::handleClient(int clientSocket) {
+
+    char buffer[1024] = { 0 };
+    recv(clientSocket, buffer, sizeof(buffer), 0);
+    writeLog(buffer);
+    printf("%s%s", buffer, clientIP.c_str());
+
+#ifdef _WIN32 // end of unix support
+    closesocket(clientSocket);
+#else
+    close(clientSocket);
+#endif
+}
+
 void Logging::startListening() {
 
     sockaddr_in serverAddress{};
@@ -45,29 +59,28 @@ void Logging::startListening() {
 
     while (true) {
         int clientSocket = accept(serverSocket, nullptr, nullptr);
-        printf("Client Connecting...");  //Log here later
+        printf("Client Connecting...");  //Log here later. nvm
         if (clientSocket < 0) {
             perror("Error accepting connection");
             continue;
         }
 
-        char buffer[1024] = { 0 };
-        recv(clientSocket, buffer, sizeof(buffer), 0);
-        writeLog(buffer);
-        printf("%s", buffer);
+        sockaddr_in clientAddr;
+        int addrSize = sizeof(clientAddr);
+        getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrSize);
+        char ip[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
 
-        #ifdef _WIN32 // end of unix support
-        closesocket(clientSocket);
-        #else
-        close(clientSocket);
-        #endif
+        clientIP = ip;
 
-
+        thread clientThread(&Logging::handleClient, this, clientSocket);
+        clientThread.detach(); 
     }
 
 }
 
 void Logging::writeLog(const string &log) {
+    lock_guard<std::mutex> lock(mutex); 
     ofstream logFile("testlog.txt", ios_base::app);
     if (logFile.is_open()) {
         logFile.write(log.c_str(), log.length());
