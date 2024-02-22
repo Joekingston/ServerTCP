@@ -10,6 +10,9 @@
 #include <arpa/inet.h>
 #endif
 
+#include <chrono>
+#include <unordered_map>
+#include <ctime>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -22,6 +25,12 @@ using namespace std;
 
 #define PROTOCOL 0
 
+struct ClientDetails {
+    string logFormat;
+    int messageCount;
+    chrono::time_point<chrono::system_clock> lastMessageTime;
+};
+
 class Logging {
 private:
 
@@ -29,7 +38,8 @@ private:
     int port = 30001;
     string logFile = "testlog.txt";
     mutex mutex;
-    string clientIP;
+    unordered_map<string, ClientDetails> clientDetailsMap;
+
 
 public:
 

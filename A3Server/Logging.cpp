@@ -12,10 +12,20 @@ Logging::~Logging()
 
 void Logging::handleClient(int clientSocket) {
 
+    sockaddr_in clientAddr;
+    int addrSize = sizeof(clientAddr);
+    getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrSize);
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
+
+    if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
+        clientDetailsMap[ip] = { "FixForLater", 0, chrono::system_clock::now() };
+    }
+
     char buffer[1024] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
     writeLog(buffer);
-    printf("%s%s", buffer, clientIP.c_str());
+    printf("%s%s", buffer, ip);
 
 #ifdef _WIN32 // end of unix support
     closesocket(clientSocket);
@@ -61,17 +71,9 @@ void Logging::startListening() {
         int clientSocket = accept(serverSocket, nullptr, nullptr);
         printf("Client Connecting...");  //Log here later. nvm
         if (clientSocket < 0) {
-            perror("Error accepting connection");
+            perror("Error accepting connection\nListening");
             continue;
         }
-
-        sockaddr_in clientAddr;
-        int addrSize = sizeof(clientAddr);
-        getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrSize);
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
-
-        clientIP = ip;
 
         thread clientThread(&Logging::handleClient, this, clientSocket);
         clientThread.detach(); 
