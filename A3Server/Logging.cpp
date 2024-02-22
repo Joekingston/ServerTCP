@@ -1,5 +1,7 @@
 #include "Logging.h"
 
+#define FAIL -1
+#define SUCCESSFUL 0
 
 Logging::Logging()
 {
@@ -17,21 +19,76 @@ void Logging::handleClient(int clientSocket) {
     getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrSize);
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
+    lock_guard<std::mutex> lock(clientDetailsMutex);
+    //if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
+    //    clientDetailsMap[ip] = { "FixForLater", 0, chrono::system_clock::now() };
+    //}
+    //else if (clientDetailsMap[ip].messageCount >= RATE_LIMIT) {
+    //    
+    //    auto currentTime = chrono::system_clock::now();
+    //    auto timeDifference = chrono::duration_cast<chrono::seconds>(currentTime - clientDetailsMap[ip].lastMessageTime);
 
-    if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
-        clientDetailsMap[ip] = { "FixForLater", 0, chrono::system_clock::now() };
+    //    if (timeDifference.count() <= RATE_LIMIT_TIME) {
+    //        printf("Rate limited user: %s\n", ip);
+    //    #ifdef _WIN32 
+    //        closesocket(clientSocket);
+    //    #else
+    //        close(clientSocket);
+    //    #endif
+    //        return;
+    //    }
+    //    else {         
+    //        clientDetailsMap[ip].messageCount = 0;
+    //    }
+    //}
+    if (int Result = checkClient(ip, clientSocket) == FAIL){
+        return;
     }
+    auto currentTime = chrono::system_clock::now();
+    auto timeDifference = chrono::duration_cast<chrono::seconds>(currentTime - clientDetailsMap[ip].lastMessageTime);
+
+    if (timeDifference.count() <= RATE_LIMIT_SPAM) {
+        clientDetailsMap[ip].messageCount++;
+    }
+    else clientDetailsMap[ip].messageCount = 0;
 
     char buffer[1024] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
     writeLog(buffer);
-    printf("%s%s", buffer, ip);
-
+    printf("%s %s\n", buffer, ip);
+    clientDetailsMap[ip].lastMessageTime = currentTime;
+    
 #ifdef _WIN32 // end of unix support
     closesocket(clientSocket);
 #else
     close(clientSocket);
 #endif
+}
+
+int Logging::checkClient(const char* ip, int clientSocket) {
+    if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
+        clientDetailsMap[ip] = { "FixForLater", 0, chrono::system_clock::now() };
+    }
+    else if (clientDetailsMap[ip].messageCount >= RATE_LIMIT) {
+
+        auto currentTime = chrono::system_clock::now();
+        auto timeDifference = chrono::duration_cast<chrono::seconds>(currentTime - clientDetailsMap[ip].lastMessageTime);
+
+        if (timeDifference.count() <= RATE_LIMIT_TIME) {
+            printf("Rate limited user: %s\n", ip);
+        #ifdef _WIN32 
+            closesocket(clientSocket);
+            WSACleanup();
+        #else
+            close(clientSocket);
+        #endif
+            return FAIL;
+        }
+        else {
+            clientDetailsMap[ip].messageCount = 0;
+        }
+    }
+    return SUCCESSFUL;
 }
 
 void Logging::startListening() {
@@ -44,14 +101,14 @@ void Logging::startListening() {
 
     serverSocket = socket(serverAddress.sin_family, SOCK_STREAM, PROTOCOL);
     if (serverSocket == -1) {
-        perror("Error creating socket");
+        perror("Error creating socket\n");
         WSACleanup();
         exit(EXIT_FAILURE);
     }
 
 
     if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-        perror("Error binding socket");
+        perror("Error binding socket\n");
         closesocket(serverSocket);
         WSACleanup();
         exit(EXIT_FAILURE);
@@ -59,7 +116,7 @@ void Logging::startListening() {
     
 
     if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
-        perror("Listen failed with error");
+        perror("Listen failed with error\n");
         closesocket(serverSocket);
         WSACleanup();
         exit(EXIT_FAILURE);
@@ -69,9 +126,9 @@ void Logging::startListening() {
 
     while (true) {
         int clientSocket = accept(serverSocket, nullptr, nullptr);
-        printf("Client Connecting...");  //Log here later. nvm
+        printf("Client Connecting...\n");  //Log here later. nvm
         if (clientSocket < 0) {
-            perror("Error accepting connection\nListening");
+            perror("Error accepting connection\nListening\n");
             continue;
         }
 
@@ -82,7 +139,7 @@ void Logging::startListening() {
 }
 
 void Logging::writeLog(const string &log) {
-    lock_guard<std::mutex> lock(mutex); 
+    lock_guard<mutex> lock(mutexWriter); 
     ofstream logFile("testlog.txt", ios_base::app);
     if (logFile.is_open()) {
         logFile.write(log.c_str(), log.length());

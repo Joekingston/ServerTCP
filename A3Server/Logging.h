@@ -23,6 +23,9 @@
 
 using namespace std;
 
+#define RATE_LIMIT_SPAM 1
+#define RATE_LIMIT 8
+#define RATE_LIMIT_TIME 600 //10 mins
 #define PROTOCOL 0
 
 struct ClientDetails {
@@ -37,9 +40,9 @@ private:
     int serverSocket;
     int port = 30001;
     string logFile = "testlog.txt";
-    mutex mutex;
+    mutex mutexWriter;
     unordered_map<string, ClientDetails> clientDetailsMap;
-
+    mutex clientDetailsMutex;
 
 public:
 
@@ -48,5 +51,8 @@ public:
     void startListening();
     void handleClient(int clientSocket);
     void writeLog(const string &log);
+    int checkClient(const char* ip, int clientSocket);
+
+
 
 };
