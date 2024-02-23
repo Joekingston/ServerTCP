@@ -10,19 +10,8 @@ int main() {
         exit(EXIT_FAILURE);
     }
 #endif
-    string test = R"({
-        "APP": "myTest",
-        "LEVEL": "testLevel",
-        "LOG": "logTest"})"; 
-    string test2;
     Logging loggerServer;
-    loggerServer.parseAndFormatLog(test, test2);
-    printf("%s", test2.c_str());
-    test = R"({
-        "APP": "myTest",
-        "LEVEL": "testLevel"})";
-    loggerServer.parseAndFormatLog(test, test2);
-    printf("%s", test2.c_str());
+    //printf("%s", test2.c_str());
     loggerServer.startListening();
 
 

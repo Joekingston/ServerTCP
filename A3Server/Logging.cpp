@@ -10,6 +10,7 @@ Logging::Logging()
 
 Logging::~Logging()
 {
+    WSACleanup();
 }
 
 
@@ -35,11 +36,10 @@ void Logging::handleClient(int clientSocket) {
     string test, test2;
     char buffer[1024] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
-    parseAndFormatLog(test, test2);
-    writeLog(buffer);
-    printf("%s %s\n", buffer, ip);
+    parseAndFormatLog(buffer, test2);
+    writeLog(test2);
+    printf("%s %s\n", test2.c_str(), ip);
     clientDetailsMap[ip].lastMessageTime = currentTime;
-    
 #ifdef _WIN32 // end of unix support
     closesocket(clientSocket);
 #else
@@ -60,7 +60,6 @@ int Logging::checkClient(const char* ip, int clientSocket) {
             printf("Rate limited user: %s\n", ip);
         #ifdef _WIN32 
             closesocket(clientSocket);
-            WSACleanup();
         #else
             close(clientSocket);
         #endif
@@ -115,7 +114,7 @@ void Logging::startListening() {
         }
 
         thread clientThread(&Logging::handleClient, this, clientSocket);
-        clientThread.detach(); 
+        clientThread.detach();
     }
 
 }

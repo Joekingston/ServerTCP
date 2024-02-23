@@ -83,3 +83,316 @@ test log01234
 test log012345
 test log0123456
 test log01234567
+{"APP":"my_app","LEVEL":"info","LOG":"log_message"}
+{"APP":"my_app","LEVEL":"info","LOG":"log_message"}
+{"APP":"my_app","LEVEL":"info","LOG":"log_message"}
+{"APP":"my_app","LEVEL":"info","LOG":"log_message"}
+{"APP":"my_app","LEVEL":"info","LOG":"log_message"}
+{"APP":"my_app","LEVEL":"info"}
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+
+
+
+
+
+
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog
+my_app info MissingLog

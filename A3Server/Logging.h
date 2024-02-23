@@ -38,6 +38,7 @@ struct ClientDetails {
 class Logging {
 private:
 
+    std::vector<std::thread> threads;
     int serverSocket;
     int port = 30001;
     string logFile = "testlog.txt";
