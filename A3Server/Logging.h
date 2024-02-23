@@ -26,9 +26,6 @@
 using namespace std;
 
 #define MIN_NUM 0
-#define RATE_LIMIT_SPAM 1
-#define RATE_LIMIT 8
-#define RATE_LIMIT_TIME 600 //10 mins
 #define PROTOCOL 0
 
 struct ClientDetails {
@@ -40,10 +37,13 @@ struct ClientDetails {
 class Logging {
 private:
 
-    unordered_map<std::string, bool> logLevels;
+    int rateLimitSpam = 1;
+    int rateLimit = 8;
+    int rateLimitTime = 600;
+    unordered_map<string, bool> logLevels;
     vector<std::thread> threads;
     int serverSocket;
-    int port = 30001;
+    int port;
     string logFile = "testlog.txt";
     mutex mutexWriter;
     unordered_map<string, ClientDetails> clientDetailsMap;
@@ -53,7 +53,7 @@ private:
 
 public:
 
-    Logging();
+    Logging(int initialPort);
     ~Logging();
     void ui();
     bool isValidOption(char option);
@@ -65,6 +65,7 @@ public:
     void parseAndFormatLog(const string& jsonMessage, string& formattedLog, const string ip);
     int checkClient(const char* ip, int clientSocket);
     void displayUI();
+    void changeRateLimiting();
     string toUpper(const string& str);
 
 

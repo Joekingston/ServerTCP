@@ -6,7 +6,7 @@
 #define DATE_LENGTH 35
 #define CHECK_PREVIOUS_OR_FUTURE 1
 
-Logging::Logging() : logLevels{
+Logging::Logging(int initialPort) : logLevels{
         {"DEBUG", true},
         {"WARNING", true},
         {"INFO", true},
@@ -14,6 +14,7 @@ Logging::Logging() : logLevels{
         {"ERROR", true},
         {"NOTICE", true}}
 {
+    port = initialPort;
     dateFormat = "%Y-%m-%d %H:%M:%S";
     serverSocket = -1;
 }
@@ -39,7 +40,7 @@ void Logging::handleClient(int clientSocket) {
     auto currentTime = chrono::system_clock::now();
     auto timeDifference = chrono::duration_cast<chrono::seconds>(currentTime - clientDetailsMap[ip].lastMessageTime);
 
-    if (timeDifference.count() <= RATE_LIMIT_SPAM) {
+    if (timeDifference.count() <= rateLimitSpam) {
         clientDetailsMap[ip].messageCount++;
     }
     else clientDetailsMap[ip].messageCount = MIN_NUM;
@@ -67,12 +68,12 @@ int Logging::checkClient(const char* ip, int clientSocket) {
     if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
         clientDetailsMap[ip] = { "FixForLater", MIN_NUM, chrono::system_clock::now() };
     }
-    else if (clientDetailsMap[ip].messageCount >= RATE_LIMIT) {
+    else if (clientDetailsMap[ip].messageCount >= rateLimit) {
 
         auto currentTime = chrono::system_clock::now();
         auto timeDifference = chrono::duration_cast<chrono::seconds>(currentTime - clientDetailsMap[ip].lastMessageTime);
 
-        if (timeDifference.count() <= RATE_LIMIT_TIME) {
+        if (timeDifference.count() <= rateLimitTime) {
             printf("Rate limited user: %s\n", ip);
         #ifdef _WIN32 
             closesocket(clientSocket);
@@ -150,7 +151,8 @@ void Logging::displayUI() {
     printf("Options:\n");
     printf("  1. Time\n");
     printf("  2. Block Levels\n");
-    printf("  3. Display UI\n");
+    printf("  3. Change Rate Limiting Settings\n");
+    printf("  4. Display UI\n");
 }
 
 
@@ -244,6 +246,47 @@ void Logging::handleBlockLevelOption() {
     printf("%s is now %s\n", it->first.c_str(), it->second ? "Enabled" : "Disabled");
 }
 
+void Logging::changeRateLimiting() {
+    while (true) {
+        printf("Select an option to change rate limiting:\n");
+        printf("1. Change spam time frame\n");
+        printf("2. Change amount of messages allowed during spam timeframe\n");
+        printf("3. Change Rate limit ban timer in seconds\n");
+        printf("4. Quit\n");
+
+        int choice;
+        if (scanf_s("%d", &choice) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        switch (choice) {
+        case 1:
+            printf("Enter new value for RATE_LIMIT_SPAM: ");
+            scanf_s("%d", &rateLimitSpam);
+            break;
+        case 2:
+            printf("Enter new value for RATE_LIMIT: ");
+            scanf_s("%d", &rateLimit);
+            break;
+        case 3:
+            printf("Enter new value for RATE_LIMIT_TIME: ");
+            scanf_s("%d", &rateLimitTime);
+            break;
+        case 4:
+            return; 
+        default:
+            printf("Invalid option. Please choose again.\n");
+            while (getchar() != '\n');
+            break;
+        }
+
+        printf("Updated values:\n");
+        printf("RATE_LIMIT_SPAM: %d\n", rateLimitSpam);
+        printf("RATE_LIMIT: %d\n", rateLimit);
+        printf("RATE_LIMIT_TIME: %d\n", rateLimitTime);
+    }
+}
 
 void Logging::ui() {
 
@@ -266,6 +309,9 @@ void Logging::ui() {
             handleBlockLevelOption();
             break;
         case 3:
+            changeRateLimiting();
+            break;
+        case 4:
             break;
         default:
             printf("Invalid choice please try again.\n");

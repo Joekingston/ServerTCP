@@ -10,9 +10,9 @@ void Logging::parseAndFormatLog(const string& jsonMessage, string& formattedLog,
     try {
         nlohmann::json j = nlohmann::json::parse(jsonMessage);
 
-        bool appPresent = j.find("APP") != j.end();
-        bool levelPresent = j.find("LEVEL") != j.end();
-        bool logPresent = j.find("LOG") != j.end();
+        bool appPresent = (j.find("APP") != j.end()) && !j["APP"].get<std::string>().empty();
+        bool levelPresent = (j.find("LEVEL") != j.end()) && !j["LEVEL"].get<std::string>().empty();
+        bool logPresent = (j.find("LOG") != j.end()) && !j["LOG"].get<std::string>().empty();
 
         if (levelPresent) {
             string level = toUpper(j["LEVEL"].get<std::string>());
