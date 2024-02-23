@@ -4,6 +4,8 @@
 // include these for support on both unix and windows
 #ifdef _WIN32
 #include <winsock2.h>
+#include <windows.h>
+#include <WS2tcpip.h>
 #else
 #include <sys/socket.h>
 #include <unistd.h>
@@ -19,7 +21,6 @@
 #include <iomanip>
 #include <cstring>
 #include "mutex"
-#include <WS2tcpip.h>
 
 using namespace std;
 
@@ -51,6 +52,7 @@ public:
     void startListening();
     void handleClient(int clientSocket);
     void writeLog(const string &log);
+    void parseAndFormatLog(const string& jsonMessage, string& formattedLog);
     int checkClient(const char* ip, int clientSocket);
 
 

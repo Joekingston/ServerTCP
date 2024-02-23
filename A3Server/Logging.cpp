@@ -12,6 +12,8 @@ Logging::~Logging()
 {
 }
 
+
+
 void Logging::handleClient(int clientSocket) {
 
     sockaddr_in clientAddr;
@@ -19,28 +21,7 @@ void Logging::handleClient(int clientSocket) {
     getpeername(clientSocket, (struct sockaddr*)&clientAddr, &addrSize);
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
-    lock_guard<std::mutex> lock(clientDetailsMutex);
-    //if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
-    //    clientDetailsMap[ip] = { "FixForLater", 0, chrono::system_clock::now() };
-    //}
-    //else if (clientDetailsMap[ip].messageCount >= RATE_LIMIT) {
-    //    
-    //    auto currentTime = chrono::system_clock::now();
-    //    auto timeDifference = chrono::duration_cast<chrono::seconds>(currentTime - clientDetailsMap[ip].lastMessageTime);
-
-    //    if (timeDifference.count() <= RATE_LIMIT_TIME) {
-    //        printf("Rate limited user: %s\n", ip);
-    //    #ifdef _WIN32 
-    //        closesocket(clientSocket);
-    //    #else
-    //        close(clientSocket);
-    //    #endif
-    //        return;
-    //    }
-    //    else {         
-    //        clientDetailsMap[ip].messageCount = 0;
-    //    }
-    //}
+    lock_guard<mutex> lock(clientDetailsMutex);
     if (int Result = checkClient(ip, clientSocket) == FAIL){
         return;
     }
@@ -51,9 +32,10 @@ void Logging::handleClient(int clientSocket) {
         clientDetailsMap[ip].messageCount++;
     }
     else clientDetailsMap[ip].messageCount = 0;
-
+    string test, test2;
     char buffer[1024] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
+    parseAndFormatLog(test, test2);
     writeLog(buffer);
     printf("%s %s\n", buffer, ip);
     clientDetailsMap[ip].lastMessageTime = currentTime;
@@ -91,6 +73,7 @@ int Logging::checkClient(const char* ip, int clientSocket) {
     return SUCCESSFUL;
 }
 
+
 void Logging::startListening() {
 
     sockaddr_in serverAddress{};
@@ -105,7 +88,6 @@ void Logging::startListening() {
         WSACleanup();
         exit(EXIT_FAILURE);
     }
-
 
     if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
         perror("Error binding socket\n");
@@ -137,6 +119,8 @@ void Logging::startListening() {
     }
 
 }
+
+
 
 void Logging::writeLog(const string &log) {
     lock_guard<mutex> lock(mutexWriter); 
