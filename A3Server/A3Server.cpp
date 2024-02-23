@@ -11,7 +11,8 @@ int main() {
     }
 #endif
     Logging loggerServer;
-    //printf("%s", test2.c_str());
+
+    loggerServer.ui();
     loggerServer.startListening();
 
 

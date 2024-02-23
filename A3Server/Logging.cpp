@@ -3,8 +3,15 @@
 #define FAIL -1
 #define SUCCESSFUL 0
 
-Logging::Logging()
+Logging::Logging() : logLevels{
+        {"DEBUG", true},
+        {"WARNING", true},
+        {"INFO", true},
+        {"CRITICAL", true},
+        {"ERROR", true},
+        {"NOTICE", true}}
 {
+    dateFormat = "%Y-%m-%d %H:%M:%S";
     serverSocket = -1;
 }
 
@@ -33,13 +40,18 @@ void Logging::handleClient(int clientSocket) {
         clientDetailsMap[ip].messageCount++;
     }
     else clientDetailsMap[ip].messageCount = 0;
-    string test, test2;
+
+    string formattedLog = "";
     char buffer[1024] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
-    parseAndFormatLog(buffer, test2);
-    writeLog(test2);
-    printf("%s %s\n", test2.c_str(), ip);
+    parseAndFormatLog(buffer, formattedLog, ip);
+    if (!formattedLog.empty()) {
+        writeLog(formattedLog);
+    }
+
+    printf("%s\n", formattedLog.c_str());
     clientDetailsMap[ip].lastMessageTime = currentTime;
+
 #ifdef _WIN32 // end of unix support
     closesocket(clientSocket);
 #else
@@ -119,7 +131,45 @@ void Logging::startListening() {
 
 }
 
+void Logging::handleTimeOption() {
 
+}
+
+void Logging::handleBlockLevelOption() {
+}
+
+void Logging::ui() {
+    printf("Logger Server UI\n");
+
+    while (true) {
+        printf("Options:\n");
+        printf("  1. Time\n");
+        printf("  2. BlockLevel\n");
+        printf("  3. Quit\n");
+
+        int choice;
+        printf("Enter your choice: ");
+        if (scanf_s("%d", &choice) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            handleTimeOption();
+            break;
+        case 2:
+            handleBlockLevelOption();
+            break;
+        case 3:
+            printf("Exiting Logger Server UI.\n");
+            return;
+        default:
+            printf("Invalid choice please try again.\n");
+        }
+    }
+}
 
 void Logging::writeLog(const string &log) {
     lock_guard<mutex> lock(mutexWriter); 

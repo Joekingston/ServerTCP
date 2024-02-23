@@ -38,24 +38,29 @@ struct ClientDetails {
 class Logging {
 private:
 
-    std::vector<std::thread> threads;
+    unordered_map<std::string, bool> logLevels;
+    vector<std::thread> threads;
     int serverSocket;
     int port = 30001;
     string logFile = "testlog.txt";
     mutex mutexWriter;
     unordered_map<string, ClientDetails> clientDetailsMap;
     mutex clientDetailsMutex;
+    string dateFormat;
 
 public:
 
     Logging();
     ~Logging();
+    void ui();
+    void handleBlockLevelOption();
+    void handleTimeOption();
     void startListening();
     void handleClient(int clientSocket);
     void writeLog(const string &log);
-    void parseAndFormatLog(const string& jsonMessage, string& formattedLog);
+    void parseAndFormatLog(const string& jsonMessage, string& formattedLog, const string ip);
     int checkClient(const char* ip, int clientSocket);
-
+    string toUpper(const string& str);
 
 
 };
