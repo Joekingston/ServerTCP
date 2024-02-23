@@ -132,8 +132,65 @@ void Logging::startListening() {
 }
 
 void Logging::handleTimeOption() {
+    printf("Options:\n");
+    printf("Year, Month, and Day:\n");
+    printf("  %%Y: Year with century as a decimal number (e.g., 2024).\n");
+    printf("  %%y: Year without century as a decimal number (00-99).\n");
+    printf("  %%m: Month as a zero-padded decimal number (01-12).\n");
+    printf("  %%d: Day of the month as a zero-padded decimal number (01-31).\n");
+    printf("Example: %%Y-%%m-%%d = \"2024-02-23\".\n\n");
 
+    printf("Hour, Minute, and Second:\n");
+    printf("  (%%H:): Hour (00-23).\n");
+    printf("  (%%M:): Minute (00-59).\n");
+    printf("  %%S: Second (00-59).\n");
+    printf("Example: %%H:%%M:%%S = \"13:24:45\".\n\n");
+
+    printf("Day of the Week and Month Name:\n");
+    printf("  %%a: Abbreviated weekday name (Sun, Mon, Tue, etc.).\n");
+    printf("  %%b: Abbreviated month name (Jan, Feb, Mar, etc.).\n");
+    char newFormat[35] = "";
+    cin.ignore(); 
+    printf("Enter the new date format: ");
+    cin.getline(newFormat, sizeof(newFormat));
+    usedOptions.clear();
+    for (size_t i = 0; i < strlen(newFormat); ++i) {
+        char option = newFormat[i];
+        if (option == '%' || option == ':' || option == '-') {
+            if (option == '-') {
+                if (newFormat[i + 1] != '-') {
+                    continue;
+                }
+            }
+            if (newFormat[i + 1] == '%' || newFormat[i + 1] == ':') {
+                printf("Error: Invalid syntax: doubled spacer\n");
+                return;
+            }
+            continue;
+        }
+
+        if (isValidOption(option)) {
+            if (usedOptions.find(option) != usedOptions.end()) {
+                printf("Error: Option '%c' is repeated\n", option);
+                return;
+            }
+            if (newFormat[i - 1] != '%') { //possible invalid variable, but still checks properly so go away.
+                printf("Error: Invalid syntax: Missing %%\n");
+                return;
+            }
+            usedOptions.insert(option);
+        }
+        else {
+            printf("Error: Invalid option '%c'\n", option);
+            return;
+        }
+    }
+    printf("New date format: %s\n", newFormat);
+    dateFormat = newFormat;
+    return;
 }
+
+
 
 void Logging::handleBlockLevelOption() {
 }

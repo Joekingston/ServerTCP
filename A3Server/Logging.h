@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <cstring>
 #include "mutex"
+#include <unordered_set>
 
 using namespace std;
 
@@ -47,12 +48,22 @@ private:
     unordered_map<string, ClientDetails> clientDetailsMap;
     mutex clientDetailsMutex;
     string dateFormat;
+    unordered_set<char> usedOptions;
 
 public:
 
     Logging();
     ~Logging();
     void ui();
+    bool isValidOption(char option) {
+        if (option == 'Y' || option == 'y' || option == 'm' || option == 'd' ||
+            option == 'H' || option == 'M' || option == 'S' ||
+            option == 'a' || option == 'b') {
+            return true;
+        }
+
+        return false;
+    }
     void handleBlockLevelOption();
     void handleTimeOption();
     void startListening();

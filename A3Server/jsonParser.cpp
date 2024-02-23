@@ -18,7 +18,6 @@ void Logging::parseAndFormatLog(const string& jsonMessage, string& formattedLog,
             if (logLevels.find(level) != logLevels.end() && !logLevels[level]) {
                 printf("bounced");  return;
             }
-            dateFormat = "%a %b %d %H:%M:%S %Y";
             time_t now = time(0);
             struct tm localTimeInfo;
             if (localtime_s(&localTimeInfo, &now) != 0) {
