@@ -42,7 +42,8 @@ void Logging::parseAndFormatLog(const string& jsonMessage, string& formattedLog,
             if (length > MIN_NUM && dt[length - 1] == '\n') {
                 dt[length - 1] = '\0';
             }
-            //
+            
+
             if (appPresent && levelPresent && logPresent) {
                 formattedLog = string(dt) + " " +
                     ip + " " +
@@ -51,13 +52,13 @@ void Logging::parseAndFormatLog(const string& jsonMessage, string& formattedLog,
                     j["LOG"].get<string>();
             }
             else {
-
+                string app = appPresent ? j["APP"].get<string>() : "MissingApp";
+                string log = logPresent ? j["LOG"].get<string>() : "MissingLog";
                 formattedLog = string(dt) + " " +
                     ip + " " +
                     level + " " +
-                    j.value("APP", "MissingApp") + " " +
-                    j.value("LOG", "MissingLog");
-
+                    app + ": " +
+                    log;
             }
             
            
