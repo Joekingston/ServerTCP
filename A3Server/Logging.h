@@ -1,5 +1,10 @@
 #pragma once
-
+/*FILE: Logging.h
+ PROJECT : SENG2040 A3
+ PROGRAMMER : Joseph Colby Carson 8213035
+ FIRST VERSION : 2024 / 02 /23
+ DESCRIPTION: THIS Does not use linux, I didn't have the time to try and recreate
+ This houses the logging class with all the prototypes and variables this class launches a server dedicated to collecting logs from applications and moving them into a file*/
 //Collaboration with Silas Springer, he's my friend from Uni in OHIO, he said its proper to
 // include these for support on both unix and windows
 #ifdef _WIN32
@@ -52,7 +57,7 @@ private:
     unordered_set<char> usedOptions;
 
 public:
-
+    Logging();
     Logging(int initialPort);
     ~Logging();
     void ui();

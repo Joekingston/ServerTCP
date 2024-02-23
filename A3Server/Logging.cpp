@@ -1,11 +1,33 @@
-#include "Logging.h"
+/*FILE: Logging.cpp
+ PROJECT : SENG2040 A3
+ PROGRAMMER : Joseph Colby Carson 8213035
+ FIRST VERSION : 2024 / 02 /23
+ DESCRIPTION: This houses all the definitions for the function each function is used for logging and server related functions*/
 
+#include "Logging.h"
 #define FAIL -1
 #define SUCCESSFUL 0
 #define BUFFER_SIZE 2048
 #define DATE_LENGTH 35
 #define CHECK_PREVIOUS_OR_FUTURE 1
 
+ //constructor
+//name Logging
+//purpose : constructor with no value
+Logging::Logging() : logLevels{
+        {"DEBUG", true},
+        {"WARNING", true},
+        {"INFO", true},
+        {"CRITICAL", true},
+        {"ERROR", true},
+        {"NOTICE", true} }
+{
+    port = 30001;
+    dateFormat = "%Y-%m-%d %H:%M:%S";
+    serverSocket = -1;
+}
+//name Logging
+//purpose : constructor with port value
 Logging::Logging(int initialPort) : logLevels{
         {"DEBUG", true},
         {"WARNING", true},
@@ -18,14 +40,17 @@ Logging::Logging(int initialPort) : logLevels{
     dateFormat = "%Y-%m-%d %H:%M:%S";
     serverSocket = -1;
 }
-
+//destructor
+//name Logging
+//purpose : destructor to clean WSA
 Logging::~Logging()
 {
     WSACleanup();
 }
-
-
-
+// Name    : handleClient
+// Purpose : Handles communication with a client, checks rate limits, receives log data, and processes it.
+// Inputs  : int clientSocket : The socket for the connected client.
+// Returns : void
 void Logging::handleClient(int clientSocket) {
 
     sockaddr_in clientAddr;
@@ -62,7 +87,10 @@ void Logging::handleClient(int clientSocket) {
     close(clientSocket);
 #endif
 }
-
+// Name    : checkClient
+// Purpose : Checks if a client is allowed to send more messages based on rate limiting.
+// Inputs  : const char* ip : IP address of the client, int clientSocket : The socket for the connected client.
+// Returns : int : SUCCESSFUL if the client is allowed, FAIL otherwise.
 int Logging::checkClient(const char* ip, int clientSocket) {
 
     if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
@@ -89,6 +117,10 @@ int Logging::checkClient(const char* ip, int clientSocket) {
     return SUCCESSFUL;
 }
 
+// Name    : startListening
+// Purpose : Sets up the server socket, listens for incoming connections, and handles each client in a separate thread.
+// Inputs  : None
+// Returns : void
 
 void Logging::startListening() {
 
@@ -136,6 +168,10 @@ void Logging::startListening() {
 
 }
 
+// Name    : isValidOption
+// Purpose : Checks if a given character represents a valid option for date format.
+// Inputs  : char option : The character to check.
+// Returns : bool : true if the character is a valid option, false otherwise.
 bool Logging::isValidOption(char option) {
 
     if (option == 'Y' || option == 'y' || option == 'm' || option == 'd' ||
@@ -145,6 +181,11 @@ bool Logging::isValidOption(char option) {
     }
     return false;
 }
+
+// Name    : displayUI
+// Purpose : Displays the user interface options.
+// Inputs  : None
+// Returns : void
 void Logging::displayUI() {
 
     printf("Logger Server UI\n");
@@ -155,7 +196,10 @@ void Logging::displayUI() {
     printf("  4. Display UI\n");
 }
 
-
+// Name    : handleTimeOption
+// Purpose : Handles the user's input for changing the date format.
+// Inputs  : None
+// Returns : void
 void Logging::handleTimeOption() {
 
     printf("Options:\n");
@@ -217,7 +261,10 @@ void Logging::handleTimeOption() {
 }
 
 
-
+// Name    : handleBlockLevelOption
+// Purpose : Handles the user's input for enabling or disabling certain log levels.
+// Inputs  : None
+// Returns : void
 void Logging::handleBlockLevelOption() {
 
     printf("Log Levels:\n");
@@ -245,7 +292,10 @@ void Logging::handleBlockLevelOption() {
 
     printf("%s is now %s\n", it->first.c_str(), it->second ? "Enabled" : "Disabled");
 }
-
+// Name    : changeRateLimiting
+// Purpose : Allows the user to modify rate limiting settings.
+// Inputs  : None
+// Returns : void
 void Logging::changeRateLimiting() {
     while (true) {
         printf("Select an option to change rate limiting:\n");
@@ -287,7 +337,10 @@ void Logging::changeRateLimiting() {
         printf("RATE_LIMIT_TIME: %d\n", rateLimitTime);
     }
 }
-
+// Name    : ui
+// Purpose : Displays the user interface and handles user input.
+// Inputs  : None
+// Returns : void
 void Logging::ui() {
 
     while (true) {
@@ -318,10 +371,13 @@ void Logging::ui() {
         }
     }
 }
-
+// Name    : writeLog
+// Purpose : Writes a log entry to the log file.
+// Inputs  : const string &log : The log entry to be written.
+// Returns : void
 void Logging::writeLog(const string &log) {
 
-    lock_guard<mutex> lock(mutexWriter); 
+    lock_guard<mutex> lock(mutexWriter); // this allows it to be fully in order
     ofstream logFile("testlog.txt", ios_base::app);
     if (logFile.is_open()) {
         logFile.write(log.c_str(), log.length());
