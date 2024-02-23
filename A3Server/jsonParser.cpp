@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 #include "Logging.h"
 #include <ctime>
+#define ERROR_CHECK 0
 using namespace std;
 
 void Logging::parseAndFormatLog(const string& jsonMessage, string& formattedLog, const string ip) {
@@ -18,16 +19,16 @@ void Logging::parseAndFormatLog(const string& jsonMessage, string& formattedLog,
             if (logLevels.find(level) != logLevels.end() && !logLevels[level]) {
                 printf("bounced");  return;
             }
-            time_t now = time(0);
+            time_t now = time(MIN_NUM);
             struct tm localTimeInfo;
-            if (localtime_s(&localTimeInfo, &now) != 0) {
+            if (localtime_s(&localTimeInfo, &now) != ERROR_CHECK) {
                 printf("Error getting local time\n");
                 return;
             }
             char dt[30];
             strftime(dt, sizeof(dt), dateFormat.c_str(), &localTimeInfo);
-            size_t length = std::strlen(dt);
-            if (length > 0 && dt[length - 1] == '\n') {
+            size_t length = strlen(dt);
+            if (length > MIN_NUM && dt[length - 1] == '\n') {
                 dt[length - 1] = '\0';
             }
             if (appPresent && levelPresent && logPresent) {

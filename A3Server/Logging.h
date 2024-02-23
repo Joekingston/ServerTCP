@@ -25,6 +25,7 @@
 
 using namespace std;
 
+#define MIN_NUM 0
 #define RATE_LIMIT_SPAM 1
 #define RATE_LIMIT 8
 #define RATE_LIMIT_TIME 600 //10 mins
@@ -55,15 +56,7 @@ public:
     Logging();
     ~Logging();
     void ui();
-    bool isValidOption(char option) {
-        if (option == 'Y' || option == 'y' || option == 'm' || option == 'd' ||
-            option == 'H' || option == 'M' || option == 'S' ||
-            option == 'a' || option == 'b') {
-            return true;
-        }
-
-        return false;
-    }
+    bool isValidOption(char option);
     void handleBlockLevelOption();
     void handleTimeOption();
     void startListening();
@@ -71,6 +64,7 @@ public:
     void writeLog(const string &log);
     void parseAndFormatLog(const string& jsonMessage, string& formattedLog, const string ip);
     int checkClient(const char* ip, int clientSocket);
+    void displayUI();
     string toUpper(const string& str);
 
 

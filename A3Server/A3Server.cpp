@@ -12,7 +12,11 @@ int main() {
 #endif
     Logging loggerServer;
 
-    loggerServer.ui();
+    
+    thread uiThread([&]() {
+        loggerServer.ui();
+        });
+
     loggerServer.startListening();
 
 

@@ -2,6 +2,9 @@
 
 #define FAIL -1
 #define SUCCESSFUL 0
+#define BUFFER_SIZE 2048
+#define DATE_LENGTH 35
+#define CHECK_PREVIOUS_OR_FUTURE 1
 
 Logging::Logging() : logLevels{
         {"DEBUG", true},
@@ -39,10 +42,10 @@ void Logging::handleClient(int clientSocket) {
     if (timeDifference.count() <= RATE_LIMIT_SPAM) {
         clientDetailsMap[ip].messageCount++;
     }
-    else clientDetailsMap[ip].messageCount = 0;
+    else clientDetailsMap[ip].messageCount = MIN_NUM;
 
     string formattedLog = "";
-    char buffer[1024] = { 0 };
+    char buffer[BUFFER_SIZE] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
     parseAndFormatLog(buffer, formattedLog, ip);
     if (!formattedLog.empty()) {
@@ -60,8 +63,9 @@ void Logging::handleClient(int clientSocket) {
 }
 
 int Logging::checkClient(const char* ip, int clientSocket) {
+
     if (clientDetailsMap.find(ip) == clientDetailsMap.end()) {
-        clientDetailsMap[ip] = { "FixForLater", 0, chrono::system_clock::now() };
+        clientDetailsMap[ip] = { "FixForLater", MIN_NUM, chrono::system_clock::now() };
     }
     else if (clientDetailsMap[ip].messageCount >= RATE_LIMIT) {
 
@@ -94,7 +98,7 @@ void Logging::startListening() {
 
 
     serverSocket = socket(serverAddress.sin_family, SOCK_STREAM, PROTOCOL);
-    if (serverSocket == -1) {
+    if (serverSocket == FAIL) {
         perror("Error creating socket\n");
         WSACleanup();
         exit(EXIT_FAILURE);
@@ -131,7 +135,27 @@ void Logging::startListening() {
 
 }
 
+bool Logging::isValidOption(char option) {
+
+    if (option == 'Y' || option == 'y' || option == 'm' || option == 'd' ||
+        option == 'H' || option == 'M' || option == 'S' || option == 'a' ||
+        option == 'b') {
+        return true;
+    }
+    return false;
+}
+void Logging::displayUI() {
+
+    printf("Logger Server UI\n");
+    printf("Options:\n");
+    printf("  1. Time\n");
+    printf("  2. Block Levels\n");
+    printf("  3. Display UI\n");
+}
+
+
 void Logging::handleTimeOption() {
+
     printf("Options:\n");
     printf("Year, Month, and Day:\n");
     printf("  %%Y: Year with century as a decimal number (e.g., 2024).\n");
@@ -149,7 +173,7 @@ void Logging::handleTimeOption() {
     printf("Day of the Week and Month Name:\n");
     printf("  %%a: Abbreviated weekday name (Sun, Mon, Tue, etc.).\n");
     printf("  %%b: Abbreviated month name (Jan, Feb, Mar, etc.).\n");
-    char newFormat[35] = "";
+    char newFormat[DATE_LENGTH] = "";
     cin.ignore(); 
     printf("Enter the new date format: ");
     cin.getline(newFormat, sizeof(newFormat));
@@ -162,7 +186,7 @@ void Logging::handleTimeOption() {
                     continue;
                 }
             }
-            if (newFormat[i + 1] == '%' || newFormat[i + 1] == ':') {
+            if (newFormat[i + CHECK_PREVIOUS_OR_FUTURE] == '%' || newFormat[i + CHECK_PREVIOUS_OR_FUTURE] == ':') {
                 printf("Error: Invalid syntax: doubled spacer\n");
                 return;
             }
@@ -174,7 +198,7 @@ void Logging::handleTimeOption() {
                 printf("Error: Option '%c' is repeated\n", option);
                 return;
             }
-            if (newFormat[i - 1] != '%') { //possible invalid variable, but still checks properly so go away.
+            if (newFormat[i - CHECK_PREVIOUS_OR_FUTURE] != '%') { //possible invalid variable, but still checks properly so go away.
                 printf("Error: Invalid syntax: Missing %%\n");
                 return;
             }
@@ -193,16 +217,38 @@ void Logging::handleTimeOption() {
 
 
 void Logging::handleBlockLevelOption() {
+
+    printf("Log Levels:\n");
+    int index = 1;
+    for (const auto& entry : logLevels) {
+        printf("%d. %s: %s\n", index, entry.first.c_str(), entry.second ? "Enabled" : "Disabled");
+        ++index;
+    }
+    printf("Enter the number of the level to toggle (0 to exit): ");
+    int choice;
+    if (scanf_s("%d", &choice) != 1) {
+        printf("Invalid input. Please enter a valid number\n");
+        return;
+    }
+    if (choice == 0) {
+        return;
+    }
+    if (choice < 1 || choice > logLevels.size()) {
+        printf("Invalid choice. Please enter a valid number\n");
+        return;
+    }
+    auto it = logLevels.begin();
+    advance(it, choice - 1);
+    it->second = !it->second;
+
+    printf("%s is now %s\n", it->first.c_str(), it->second ? "Enabled" : "Disabled");
 }
 
+
 void Logging::ui() {
-    printf("Logger Server UI\n");
 
     while (true) {
-        printf("Options:\n");
-        printf("  1. Time\n");
-        printf("  2. BlockLevel\n");
-        printf("  3. Quit\n");
+        displayUI();
 
         int choice;
         printf("Enter your choice: ");
@@ -220,8 +266,7 @@ void Logging::ui() {
             handleBlockLevelOption();
             break;
         case 3:
-            printf("Exiting Logger Server UI.\n");
-            return;
+            break;
         default:
             printf("Invalid choice please try again.\n");
         }
@@ -229,6 +274,7 @@ void Logging::ui() {
 }
 
 void Logging::writeLog(const string &log) {
+
     lock_guard<mutex> lock(mutexWriter); 
     ofstream logFile("testlog.txt", ios_base::app);
     if (logFile.is_open()) {
