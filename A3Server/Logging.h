@@ -39,6 +39,10 @@ struct ClientDetails {
     chrono::time_point<chrono::system_clock> lastMessageTime;
 };
 
+
+//Name Logging
+//Purpose This houses all the logging class function, its used to run a server and take clients logs, which sends the logs
+// into text files 
 class Logging {
 private:
 
