@@ -12,7 +12,7 @@
 #define CHECK_PREVIOUS_OR_FUTURE 1
 
  //constructor
-//name Logging
+//name    : Logging
 //purpose : constructor with no value
 Logging::Logging() : logLevels{
         {"DEBUG", true},
@@ -26,7 +26,7 @@ Logging::Logging() : logLevels{
     dateFormat = "%Y-%m-%d %H:%M:%S";
     serverSocket = -1;
 }
-//name Logging
+//name    : Logging
 //purpose : constructor with port value
 Logging::Logging(int initialPort) : logLevels{
         {"DEBUG", true},
@@ -41,7 +41,7 @@ Logging::Logging(int initialPort) : logLevels{
     serverSocket = -1;
 }
 //destructor
-//name Logging
+//name    : Logging
 //purpose : destructor to clean WSA
 Logging::~Logging()
 {

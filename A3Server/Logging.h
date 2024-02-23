@@ -40,15 +40,15 @@ struct ClientDetails {
 };
 
 
-//Name Logging
-//Purpose This houses all the logging class function, its used to run a server and take clients logs, which sends the logs
+//Name    : Logging
+//Purpose : This houses all the logging class function, its used to run a server and take clients logs, which sends the logs
 // into text files 
 class Logging {
 private:
 
-    int rateLimitSpam = 1;
-    int rateLimit = 8;
-    int rateLimitTime = 600;
+    int rateLimitSpam = 1; // default values
+    int rateLimit = 8; // default value
+    int rateLimitTime = 600; //defualt value 10 mins
     unordered_map<string, bool> logLevels;
     vector<std::thread> threads;
     int serverSocket;
