@@ -1,0 +1,1 @@
+I have additional include directories in properies of the server then c/c++ -> general -> additional include directors. this is currently set to relative so it should work, but if it doesnt it need to go into .\A3Server\A3Server\json-develop\include relative works from the cpp file so .\json-develop\include should work, but absolute file pathing maybe needed.
