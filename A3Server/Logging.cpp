@@ -23,12 +23,13 @@ Logging::Logging() : logLevels{
         {"NOTICE", true} }
 {
     port = 30001;
+    logFilename = "Log.txt";
     dateFormat = "%Y-%m-%d %H:%M:%S";
     serverSocket = -1;
 }
 //name    : Logging
 //purpose : constructor with port value
-Logging::Logging(int initialPort) : logLevels{
+Logging::Logging(int initialPort, string filename) : logLevels{
         {"DEBUG", true},
         {"WARNING", true},
         {"INFO", true},
@@ -37,6 +38,7 @@ Logging::Logging(int initialPort) : logLevels{
         {"NOTICE", true}}
 {
     port = initialPort;
+    logFilename = filename;
     dateFormat = "%Y-%m-%d %H:%M:%S";
     serverSocket = -1;
 }
@@ -371,6 +373,12 @@ void Logging::ui() {
         }
     }
 }
+
+
+void Logging::setLogFile(const string &newLogFile) {
+    logFilename = newLogFile;
+}
+
 // Name    : writeLog
 // Purpose : Writes a log entry to the log file.
 // Inputs  : const string &log : The log entry to be written.
@@ -378,7 +386,7 @@ void Logging::ui() {
 void Logging::writeLog(const string &log) {
 
     lock_guard<mutex> lock(mutexWriter); // this allows it to be fully in order
-    ofstream logFile("testlog.txt", ios_base::app);
+    ofstream logFile(logFilename, ios_base::app);
     if (logFile.is_open()) {
         logFile.write(log.c_str(), log.length());
         logFile.put('\n');

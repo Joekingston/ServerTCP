@@ -53,7 +53,7 @@ private:
     vector<std::thread> threads;
     int serverSocket;
     int port;
-    string logFile = "testlog.txt";
+    string logFilename = "testlog.txt";
     mutex mutexWriter;
     unordered_map<string, ClientDetails> clientDetailsMap;
     mutex clientDetailsMutex;
@@ -62,9 +62,10 @@ private:
 
 public:
     Logging();
-    Logging(int initialPort);
+    Logging(int initialPort,string filename);
     ~Logging();
     void ui();
+    void setLogFile(const string &newLogFile);
     bool isValidOption(char option);
     void handleBlockLevelOption();
     void handleTimeOption();
