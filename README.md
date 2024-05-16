@@ -23,3 +23,6 @@ Logs Per Time Frame: Maximum number of logs allowed within a specified time fram
 Ban Duration: Duration for which logging will be banned if the rate limit is exceeded.
 Time Format
 Customize the time format to fit your needs. The server allows you to define the format in which timestamps are logged.
+
+
+TEST CLIENT : https://github.com/Joekingston/A3LogClient
